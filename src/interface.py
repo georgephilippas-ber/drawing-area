@@ -7,16 +7,15 @@ from src.drawing import ENVELOPE_DETAIL_LINE_LAYER, EXTERIOR_WALLS_LAYER_HATCH_D
 
 
 class NetArea_QDialog(QDialog):
-    def __init__(self, result: float):
+    def __init__(self, net_area: float, exterior_walls_area: float):
         super().__init__()
         self.setWindowTitle("Net Area")
 
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel("Net Area:"))
+        layout.addWidget(QLabel("Net Area, Exterior Walls Area:"))
 
-        # horizontal layout for result and copy button
         result_layout = QHBoxLayout()
-        result_box = QLineEdit(f"{result:.3f}")
+        result_box = QLineEdit(f"{net_area:.3f}, {exterior_walls_area:.3f}")
         result_box.setReadOnly(True)
         result_layout.addWidget(result_box)
 
@@ -85,9 +84,9 @@ class Main_MainWindow(QMainWindow):
     def run_QPushButton_SLOT(self):
         if self.__filename_QLineEdit.text() != "":
             try:
-                net_area_ = get_net_area(self.__filename_QLineEdit.text())
+                result_ = get_net_area(self.__filename_QLineEdit.text())
 
-                net_area_QDialog = NetArea_QDialog(net_area_)
+                net_area_QDialog = NetArea_QDialog(result_.net_area, result_.exterior_walls_area)
                 net_area_QDialog.exec()
             except Exception as e:
                 print("ERROR: I/O")

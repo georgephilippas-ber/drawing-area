@@ -2,9 +2,13 @@ from typing import Tuple, List
 
 from ezdxf import readfile
 from ezdxf.entities import Hatch, EdgePath
-from shapely import MultiPoint
 from shapely.geometry import Polygon
-from alphashape import alphashape
+
+from dataclasses import dataclass
+
+ENVELOPE_DETAIL_LINE_LAYER: str = "LINE-1"
+EXTERIOR_WALLS_LAYER_HATCH_DEFAULT: str = "A-WALL-PATT-Exterior-1"
+FILLED_REGION_LAYER_DEFAULT: str = "A-DETL-GENF-1"
 
 
 def plane_point(space_point: Tuple[float, float, float]) -> Tuple[float, float]:
@@ -25,15 +29,16 @@ def get_hatch_area(hatch: Hatch) -> float:
     return polygon_from_hatch(hatch).area
 
 
-ENVELOPE_DETAIL_LINE_LAYER: str = "A-DETL"
-EXTERIOR_WALLS_LAYER_HATCH_DEFAULT: str = "A-WALL-PATT-Exterior-1"
-FILLED_REGION_LAYER_DEFAULT: str = "A-DETL-GENF-1"
+@dataclass
+class Area:
+    net_area: float
+    exterior_walls_area: float
 
 
 def get_net_area(filename: str, *, exterior_walls_layer_: str = ENVELOPE_DETAIL_LINE_LAYER,
                  exterior_walls_layer_hatch_: str = EXTERIOR_WALLS_LAYER_HATCH_DEFAULT,
                  filled_region_layer_: str = FILLED_REGION_LAYER_DEFAULT
-                 ) -> float:
+                 ) -> Area:
     document = readfile(filename)
     modelspace = document.modelspace()
 
@@ -67,4 +72,4 @@ def get_net_area(filename: str, *, exterior_walls_layer_: str = ENVELOPE_DETAIL_
 
     final_ = net_ - negative_area_
 
-    return final_
+    return Area(final_, wall_area_)

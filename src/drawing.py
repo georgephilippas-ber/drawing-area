@@ -50,8 +50,10 @@ def get_net_area(filename: str, *, exterior_walls_layer_: str = ENVELOPE_DETAIL_
     exterior_wall_points_ = []
     for line_ in exterior_wall_lines_:
         exterior_wall_points_.append(plane_point(line_.dxf.start))
+        exterior_wall_points_.append(plane_point(line_.dxf.end))
 
     envelope_area_ = Polygon(exterior_wall_points_).area * 1.e-6
+    print('καθολικό περίγραμμα', envelope_area_)
 
     wall_polygons_: List[Polygon] = []
     wall_area_ = 0.
@@ -61,6 +63,7 @@ def get_net_area(filename: str, *, exterior_walls_layer_: str = ENVELOPE_DETAIL_
                 wall_area_ += get_hatch_area(entity_)
                 wall_polygons_.append(polygon_from_hatch(entity_))
     wall_area_ *= 1.e-6
+    print('εμβαδό εξωτερικής τοιχοποιίας', wall_area_)
 
     net_ = envelope_area_ - wall_area_
 
@@ -69,6 +72,7 @@ def get_net_area(filename: str, *, exterior_walls_layer_: str = ENVELOPE_DETAIL_
         if entity_.dxf.layer == filled_region_layer_:
             if isinstance(entity_, Hatch):
                 negative_area_ += abs(polygon_from_hatch(entity_).area) * 1.e-6
+    print('εμβαδό εξαιρούμενων επιφανειών', negative_area_)
 
     final_ = net_ - negative_area_
 

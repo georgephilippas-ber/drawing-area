@@ -84,7 +84,10 @@ class Main_MainWindow(QMainWindow):
     def run_QPushButton_SLOT(self):
         if self.__filename_QLineEdit.text() != "":
             try:
-                result_ = get_net_area(self.__filename_QLineEdit.text())
+                result_ = get_net_area(self.__filename_QLineEdit.text(),
+                                       exterior_walls_layer_=self.__exterior_walls_layer_QLineEdit.text(),
+                                       exterior_walls_layer_hatch_=self.__exterior_walls_layer_hatch_QLineEdit.text(),
+                                       filled_region_layer_=self.__filled_region_layer_QLineEdit.text())
 
                 net_area_QDialog = NetArea_QDialog(result_.net_area, result_.exterior_walls_area)
                 net_area_QDialog.exec()
